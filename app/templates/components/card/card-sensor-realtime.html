@@ -1,0 +1,47 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 mb-8" x-data="dashboardData" x-init="initWebSocket()">
+  <template x-for="card in cards" :key="card.label">
+    <div class="bg-white p-4 rounded-2xl shadow text-center space-y-2">
+      <div class="text-3xl mb-1" x-html="card.icon"></div>
+      <div class="text-sm font-semibold text-gray-500" x-text="card.label"></div>
+      <div class="relative w-20 h-20 mx-auto">
+        <svg class="absolute top-0 left-0 w-full h-full transform rotate-[-90deg]">
+          <circle class="text-gray-200" stroke-width="10" stroke="currentColor" fill="transparent" r="30" cx="40"
+            cy="40" />
+          <circle :class="card.color" stroke-width="10" stroke="currentColor" fill="transparent" r="30" cx="40" cy="40"
+            stroke-dasharray="188.4" :stroke-dashoffset="188.4 - (Math.min(card.value / card.max * 100, 100) * 188.4 / 100)" stroke-linecap="round" />
+        </svg>
+        <div class="absolute inset-0 flex items-center justify-center text-xl font-bold">
+          <span x-text="card.value + '%'"></span>
+        </div>
+      </div>
+    </div>
+  </template>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
+<script>
+  const socket = io(); // Default connects to same host
+
+  document.addEventListener('alpine:init', () => {
+    Alpine.data('dashboardData', () => ({
+      cards: [
+        { label: 'Kelembapan Tanah', value: 400, max: 1023, color: 'text-green-500', icon: '🌱' },
+        { label: 'Kelembapan Udara', value: 60, max: 100, color: 'text-blue-500', icon: '💧' },
+        { label: 'Suhu Udara', value: 30, max: 50, color: 'text-red-500', icon: '🌡️' },
+        { label: 'Suhu Tanah', value: 35, max: 50, color: 'text-yellow-500', icon: '🔥' },
+      ],
+
+      initWebSocket() {
+        socket.on('sensor_update', data => {
+          // Update card values based on label
+          for (const key in data) {
+            const card = this.cards.find(c => c.label === key);
+            if (card) {
+              card.value = data[key];
+            }
+          }
+        });
+      }
+    }));
+  });
+</script>
