@@ -35,8 +35,3 @@ def logout():
     session.pop('user', None)
     return redirect(url_for('auth.login'))
 
-
-@auth.route('/register/users', methods=['GET', 'POST'])
-def register_users():
-    return render_template('pages/index.html')
-

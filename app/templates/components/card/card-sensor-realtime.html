@@ -11,12 +11,13 @@
             stroke-dasharray="188.4" :stroke-dashoffset="188.4 - (Math.min(card.value / card.max * 100, 100) * 188.4 / 100)" stroke-linecap="round" />
         </svg>
         <div class="absolute inset-0 flex items-center justify-center text-xl font-bold">
-          <span x-text="card.value + '%'"></span>
+                  <span x-text="card.value.toFixed(1) + card.unit"></span>
         </div>
       </div>
     </div>
   </template>
 </div>
+
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
@@ -24,12 +25,12 @@
 
   document.addEventListener('alpine:init', () => {
     Alpine.data('dashboardData', () => ({
-      cards: [
-        { label: 'Kelembapan Tanah', value: 400, max: 1023, color: 'text-green-500', icon: '🌱' },
-        { label: 'Kelembapan Udara', value: 60, max: 100, color: 'text-blue-500', icon: '💧' },
-        { label: 'Suhu Udara', value: 30, max: 50, color: 'text-red-500', icon: '🌡️' },
-        { label: 'Suhu Tanah', value: 35, max: 50, color: 'text-yellow-500', icon: '🔥' },
-      ],
+        cards: [
+          { label: 'Kelembapan Tanah', value: 0, max: 100, color: 'text-green-500', icon: '🌱', unit: '%' },
+          { label: 'Kelembapan Udara', value: 0, max: 100, color: 'text-blue-500', icon: '💧', unit: '%' },
+          { label: 'Suhu Udara', value: 0, max: 100, color: 'text-red-500', icon: '🌡️', unit: '°C' },
+          { label: 'Ketinggian Air', value: 0, max: 100, color: 'text-blue-500', icon: '💧', unit: '%' },
+        ],
 
       initWebSocket() {
         socket.on('sensor_update', data => {

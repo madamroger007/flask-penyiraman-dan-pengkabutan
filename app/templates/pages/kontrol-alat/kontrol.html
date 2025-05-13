@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<h1 class="text-2xl font-bold mb-6">Kontrol Alat</h1>
+
+<div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+  {% include "components/card/card-control.html" %}
+  {% include "components/form/form-control.html" %}
+</div>
+{% endblock %}

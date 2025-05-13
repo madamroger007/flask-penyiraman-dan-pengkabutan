@@ -24,7 +24,7 @@ TOPICS = [
     ("sensor/kelembapan_tanah", 1),
     ("sensor/suhu_udara", 1),
     ("sensor/kelembapan_udara", 1),
-    ("sensor/suhu_tanah", 1)
+    ("sensor/ketinggian_air", 1)
 ]
 
 
@@ -83,7 +83,7 @@ def handle_sensor_data(client, userdata, msg):
         "sensor/kelembapan_tanah": "Kelembapan Tanah",
         "sensor/suhu_udara": "Suhu Udara",
         "sensor/kelembapan_udara": "Kelembapan Udara",
-        "sensor/suhu_tanah": "Suhu Tanah"
+        "sensor/ketinggian_air": "Ketinggian Air",
     }
 
     label = mapping.get(topic)
@@ -110,7 +110,7 @@ def run_mqtt_service():
     client.message_callback_add("sensor/kelembapan_tanah", handle_sensor_data)
     client.message_callback_add("sensor/suhu_udara", handle_sensor_data)
     client.message_callback_add("sensor/kelembapan_udara", handle_sensor_data)
-    client.message_callback_add("sensor/suhu_tanah", handle_sensor_data)
+    client.message_callback_add("sensor/ketinggian_air", handle_sensor_data)
 
 
     try:
