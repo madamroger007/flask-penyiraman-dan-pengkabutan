@@ -1,6 +1,6 @@
 from typing import List, Dict, Any
 from sqlalchemy.orm import Session
-from model.schemas.data_sensor import DataSensor  # Pastikan Anda memiliki model DataSensor yang sudah didefinisikan
+from app.src.model.schemas.data_sensor import DataSensor  # Pastikan Anda memiliki model DataSensor yang sudah didefinisikan
 
 def create_sensor_data(db_session: Session, data: Dict[str, Any]) -> DataSensor:
     new_data = DataSensor(**data)

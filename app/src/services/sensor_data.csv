@@ -1,0 +1,10 @@
+Suhu Udara,Kelembapan Udara,Kelembapan Tanah,Penyiraman,Pengkabutan
+18–24,60–80,>70,Tidak perlu,Tidak perlu
+18–24,60–80,50–70,Perlu,Tidak perlu
+18–24,60–80,<50,Perlu,Tidak perlu
+25–30,60–80,>70,Tidak perlu,Perlu
+25–30,60–80,50–70,Perlu,Perlu
+25–30,60–80,<50,Perlu,Perlu
+>30,<60,>70,Tidak perlu,Perlu
+>30,<60,50–70,Perlu,Perlu
+>30,<60,<50,Perlu,Perlu
