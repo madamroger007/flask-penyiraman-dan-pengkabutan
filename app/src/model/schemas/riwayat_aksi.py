@@ -1,7 +1,6 @@
 from datetime import datetime
 from app import db
 
-
 class RiwayatAksi(db.Model):
     __tablename__ = 'riwayat_aksi'
     id = db.Column(db.Integer, primary_key=True)

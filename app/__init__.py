@@ -30,7 +30,7 @@ def create_app():
     migrate.init_app(app, db)
     socketio.init_app(app)  # 🔌 Pasang SocketIO ke Flask app
     # ⬇️ Tambahkan ini supaya model dikenali oleh Flask-Migrate
-    from app.src.model.schemas import data_sensor, hasil_prediksi, riwayat_aksi,jadwal_penyiraman
+    from app.src.model.schemas import data_sensor, riwayat_aksi,jadwal_penyiraman
 
     from app.src.routes.main import main as main_blueprint
     from app.src.routes.auth import auth as auth_blueprint

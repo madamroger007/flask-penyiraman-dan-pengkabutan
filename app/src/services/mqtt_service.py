@@ -22,10 +22,14 @@ TOPICS = [
     ("otomatis/kabut/status", 1),
     ("sensor/kelembapan_tanah", 1),
     ("sensor/suhu_udara", 1),
-    ("sensor/kelembapan_udara", 1),
-    ("sensor/ketinggian_air", 1)
+    ("sensor/kelembapan_udara", 1)
 ]
 
+latest_sensor_data = {
+    "Suhu Udara": None,
+    "Kelembapan Udara": None,
+    "Kelembapan Tanah": None
+}
 
 client = None
 
@@ -76,20 +80,23 @@ def handle_sensor_data(client, userdata, msg):
     topic = msg.topic
     value = msg.payload.decode('utf-8').strip()
 
-    print(f"📊 Data sensor: {topic} = {value}")
-
     mapping = {
         "sensor/kelembapan_tanah": "Kelembapan Tanah",
         "sensor/suhu_udara": "Suhu Udara",
         "sensor/kelembapan_udara": "Kelembapan Udara",
-        "sensor/ketinggian_air": "Ketinggian Air",
     }
 
     label = mapping.get(topic)
     if label:
+        try:
+            latest_sensor_data[label] = float(value)
+        except ValueError:
+            print(f"❌ Nilai sensor tidak valid: {value}")
+            return
+
         # Emit data via WebSocket
         socketio.emit("sensor_update", {
-            label: float(value)
+            label: latest_sensor_data[label]
         })
         print(f"🔄 Emit WebSocket: {label} = {value}")
 
@@ -109,7 +116,6 @@ def run_mqtt_service():
     client.message_callback_add("sensor/kelembapan_tanah", handle_sensor_data)
     client.message_callback_add("sensor/suhu_udara", handle_sensor_data)
     client.message_callback_add("sensor/kelembapan_udara", handle_sensor_data)
-    client.message_callback_add("sensor/ketinggian_air", handle_sensor_data)
 
 
     try:
@@ -128,12 +134,13 @@ def run_mqtt_service():
         client.loop_stop()
 
 # 📤 Perintah manual (jika perlu)
-def kirim_perintah_siram():
+def kirim_perintah_siram(perintah):
     if client:
-        client.publish("otomatis/siram/perintah", "1")
-        print("📤 Perintah penyiraman dikirim")
+        client.publish("otomatis/siram/status", perintah)
+        print(f"📤 Perintah penyiraman dikirim: {perintah}")
 
-def kirim_perintah_kabut():
+def kirim_perintah_kabut(perintah):
     if client:
-        client.publish("otomatis/kabut/perintah", "1")
-        print("📤 Perintah pengkabutan dikirim")
+        client.publish("otomatis/kabut/status", perintah)
+        print(f"📤 Perintah pengkabutan dikirim: {perintah}")
+

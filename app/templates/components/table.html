@@ -5,20 +5,33 @@
                 <th class="px-4 py-3 text-left">K. UDARA</th>
                 <th class="px-4 py-3 text-left">K. TANAH</th>
                 <th class="px-4 py-3 text-left">SUHU</th>
-                <th class="px-4 py-3 text-left">T. AIR TANDON</th>
+                <th class="px-4 py-3 text-left">PENYIRAMAN</th>
+                <th class="px-4 py-3 text-left">PENGKABUTAN</th>
                 <th class="px-4 py-3 text-left">WAKTU</th>
-                <th class="px-4 py-3 text-left">PREDIKSI</th>
+
             </tr>
         </thead>
         <tbody class="text-sm text-gray-600">
             {% for row in table_rows %}
             <tr class="border-t">
-                <td class="px-4 py-2">{{ row.k_udara }}</td>
-                <td class="px-4 py-2">{{ row.k_tanah }}</td>
+                <td class="px-4 py-2">{{ row.kelembapan_udara }}</td>
+                <td class="px-4 py-2">{{ row.kelembapan_tanah }}</td>
                 <td class="px-4 py-2">{{ row.suhu }}</td>
-                <td class="px-4 py-2">{{ row.t_air }}</td>
-                <td class="px-4 py-2">{{ row.waktu }}</td>
-                <td class="px-4 py-2">{{ row.prediksi }}</td>
+                <td class="px-4 py-2">
+                    {% if row.penyiraman %}
+                        perlu
+                    {% else %}
+                        tidak perlu
+                    {% endif %}
+                </td>
+                <td class="px-4 py-2">
+                    {% if row.pengkabutan %}
+                        perlu
+                    {% else %}
+                        tidak perlu
+                    {% endif %}
+                </td>
+                <td class="px-4 py-2">{{ row.dibuat_sejak }}</td>
             </tr>
             {% endfor %}
         </tbody>

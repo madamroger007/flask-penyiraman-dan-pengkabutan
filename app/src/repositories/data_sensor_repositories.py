@@ -1,34 +1,16 @@
 from typing import List, Dict, Any
-from sqlalchemy.orm import Session
 from app.src.model.schemas.data_sensor import DataSensor  # Pastikan Anda memiliki model DataSensor yang sudah didefinisikan
+from app import db
 
-def create_sensor_data(db_session: Session, data: Dict[str, Any]) -> DataSensor:
-    new_data = DataSensor(**data)
-    db_session.add(new_data)
-    db_session.commit()
-    db_session.refresh(new_data)
-    return new_data
 
-def read_sensor_data(db_session: Session, sensor_id: int) -> DataSensor:
-    return db_session.query(DataSensor).filter(DataSensor.id == sensor_id).first()
+def get_all_data_sensors() -> List[DataSensor]:
+    return DataSensor.query.all()
 
-def read_all_sensor_data(db_session: Session) -> List[DataSensor]:
-    return db_session.query(DataSensor).all()
+def get_data_sensor_by_id(data_sensor_id: int) -> DataSensor:
+    return DataSensor.query.get(data_sensor_id)
 
-def update_sensor_data(db_session: Session, sensor_id: int, updated_data: Dict[str, Any]) -> DataSensor:
-    sensor_data = db_session.query(DataSensor).filter(DataSensor.id == sensor_id).first()
-    if not sensor_data:
-        return None
-    for key, value in updated_data.items():
-        setattr(sensor_data, key, value)
-    db_session.commit()
-    db_session.refresh(sensor_data)
-    return sensor_data
-
-def delete_sensor_data(db_session: Session, sensor_id: int) -> bool:
-    sensor_data = db_session.query(DataSensor).filter(DataSensor.id == sensor_id).first()
-    if not sensor_data:
-        return False
-    db_session.delete(sensor_data)
-    db_session.commit()
-    return True
+def create_data_sensor(data: Dict[str, Any]) -> DataSensor:
+    data_sensor = DataSensor(**data)
+    db.session.add(data_sensor)
+    db.session.commit()
+    return data_sensor

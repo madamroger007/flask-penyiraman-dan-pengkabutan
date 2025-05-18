@@ -17,27 +17,12 @@ def generate_sensor_data():
             suhu=round(random.uniform(20, 35), 2),
             kelembapan_udara=round(random.uniform(40, 80), 2),
             kelembapan_tanah=round(random.uniform(20, 60), 2),
-            ketinggian_air=round(random.uniform(5, 30), 2),
             dibuat_sejak=fake.date_time_this_year()
         )
         sensor_data.append(sensor)
     db.session.add_all(sensor_data)
     db.session.commit()
 
-# Function to generate dummy data for HasilPrediksi
-def generate_prediction_results():
-    prediction_results = []
-    for _ in range(10):
-        prediction = HasilPrediksi(
-            prediksi_siram=random.choice([True, False]),
-            prediksi_kabut=random.choice([True, False]),
-            probabilitas_siram=round(random.uniform(0.5, 1.0), 2),
-            probabilitas_kabut=round(random.uniform(0.5, 1.0), 2),
-            dibuat_sejak=fake.date_time_this_year()
-        )
-        prediction_results.append(prediction)
-    db.session.add_all(prediction_results)
-    db.session.commit()
 
 # Function to generate dummy data for JadwalPenyiraman
 def generate_watering_schedules():
@@ -74,7 +59,6 @@ def generate_data():
     with app.app_context():
         print("Generating dummy data...")
         generate_sensor_data()
-        generate_prediction_results()
         generate_watering_schedules()
         generate_action_history()
         print("Dummy data generated successfully!")
@@ -84,7 +68,6 @@ def remove_all_data():
     with app.app_context():
         print("Removing all data...")
         db.session.query(DataSensor).delete()
-        db.session.query(HasilPrediksi).delete()
         db.session.query(JadwalPenyiraman).delete()
         db.session.query(RiwayatAksi).delete()
         db.session.commit()
