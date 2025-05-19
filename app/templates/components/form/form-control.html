@@ -1,23 +1,94 @@
-<!-- Form Penyiraman -->
+<!-- Div Penyiraman -->
 <div class="bg-white rounded-xl shadow-md p-6">
   <h2 class="text-blue-700 font-semibold mb-4">Edit Waktu Penyiraman</h2>
-  <form action="/update-penyiraman" method="POST" class="space-y-4">
+  <div class="space-y-4">
     <div class="grid grid-cols-2 gap-4">
-      <input type="text" name="penyiraman1" value="7.00" class="w-full border rounded-lg px-3 py-2 text-center" />
-      <input type="text" name="penyiraman2" value="16.00" class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-penyiraman-1" value="{{waktu_1_penyiraman}}" class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-penyiraman-2" value="{{waktu_2_penyiraman}}" class="w-full border rounded-lg px-3 py-2 text-center" />
     </div>
-    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
-  </form>
+    <button onclick="updatePenyiraman()" class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
+  </div>
+  <p class="text-sm mt-2 text-green-600" id="msg-penyiraman"></p>
 </div>
 
-<!-- Form Pengkabutan -->
+<!-- Div Pengkabutan -->
 <div class="bg-white rounded-xl shadow-md p-6">
   <h2 class="text-blue-700 font-semibold mb-4">Edit Waktu Pengkabutan</h2>
-  <form action="/update-pengkabutan" method="POST" class="space-y-4">
+  <div class="space-y-4">
     <div class="grid grid-cols-2 gap-4">
-      <input type="text" name="pengkabutan1" value="7.00" class="w-full border rounded-lg px-3 py-2 text-center" />
-      <input type="text" name="pengkabutan2" value="16.00" class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-pengkabutan-1" value="{{waktu_1_pengkabutan}}" class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-pengkabutan-2" value="{{waktu_2_pengkabutan}}" class="w-full border rounded-lg px-3 py-2 text-center" />
     </div>
-    <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
-  </form>
+    <button onclick="updatePengkabutan()" class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
+  </div>
+  <p class="text-sm mt-2 text-green-600" id="msg-pengkabutan"></p>
 </div>
+
+
+{% block scripts %}
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+  // Cegah deklarasi socket berulang
+  window.socket = window.socket || io();
+
+  window.updatePenyiraman = async function() {
+    const waktu1 = document.getElementById("input-waktu-penyiraman-1").value;
+    const waktu2 = document.getElementById("input-waktu-penyiraman-2").value;
+
+    const res = await fetch(`/kontrol/waktu/jadwal-penyiraman/{{ penyiraman_id }}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        waktu_penyiraman_1: waktu1,
+        waktu_penyiraman_2: waktu2,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Error response:", text);
+      document.getElementById("msg-penyiraman").innerText = "Gagal update jadwal penyiraman: " + res.statusText;
+      return;
+    }
+
+    const result = await res.json();
+    document.getElementById("msg-penyiraman").innerText = result.message;
+  };
+
+  window.updatePengkabutan = async function() {
+    const waktu1 = document.getElementById("input-waktu-pengkabutan-1").value;
+    const waktu2 = document.getElementById("input-waktu-pengkabutan-2").value;
+
+    const res = await fetch(`/kontrol/waktu/jadwal-pengkabutan/{{ pengkabutan_id }}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        waktu_pengkabutan_1: waktu1,
+        waktu_pengkabutan_2: waktu2,
+      }),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error("Error response:", text);
+      document.getElementById("msg-pengkabutan").innerText = "Gagal update jadwal pengkabutan: " + res.statusText;
+      return;
+    }
+
+    const result = await res.json();
+    document.getElementById("msg-pengkabutan").innerText = result.message;
+  };
+
+  window.socket.on("jadwal_updated", (data) => {
+    if (data.jenis === "penyiraman") {
+      document.getElementById("input-waktu-penyiraman-1").value = data.jadwal.waktu_1;
+      document.getElementById("input-waktu-penyiraman-2").value = data.jadwal.waktu_2;
+      document.getElementById("msg-penyiraman").innerText = "Jadwal diperbarui secara realtime";
+    } else if (data.jenis === "pengkabutan") {
+      document.getElementById("input-waktu-pengkabutan-1").value = data.jadwal.waktu_1;
+      document.getElementById("input-waktu-pengkabutan-2").value = data.jadwal.waktu_2;
+      document.getElementById("msg-pengkabutan").innerText = "Jadwal diperbarui secara realtime";
+    }
+  });
+</script>
+{% endblock %}

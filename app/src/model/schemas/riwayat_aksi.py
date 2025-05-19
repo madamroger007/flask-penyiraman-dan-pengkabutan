@@ -7,4 +7,3 @@ class RiwayatAksi(db.Model):
     jenis_aksi = db.Column(db.Enum('penyiraman', 'pengkabutan', name='riwayat_aksi_enum'))
     status = db.Column(db.Enum('aktif', 'nonaktif', name='status_aksi_enum'))
     dibuat_sejak = db.Column(db.DateTime, default=datetime.utcnow)
-    diubah_sejak = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

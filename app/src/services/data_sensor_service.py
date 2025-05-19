@@ -5,15 +5,14 @@ import pytz
 from app import create_app
 from app.src.services.naive_bayes_train_service import predict_status
 from app.src.services.mqtt_service import latest_sensor_data
-from app.src.repositories.data_sensor_repositories import create_data_sensor,get_all_data_sensors
-
-# Buat instance Flask app
-app = create_app()
+from app.src.repositories.data_sensor_repositories import create_data_sensor_repository,get_all_data_sensors_repository
 
 # Inisialisasi scheduler dengan zona waktu Jakarta
 scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Jakarta'))
 
 def scheduled_prediction():
+    from app import create_app
+    app = create_app()
     with app.app_context():  # ✅ Gunakan context Flask
         print("🔄 Emit WebSocket: Kelembapan Tanah =", latest_sensor_data.get("Kelembapan Tanah"))
 
@@ -37,12 +36,12 @@ def scheduled_prediction():
                 'penyiraman': penyiraman_bool,
                 'pengkabutan': pengkabutan_bool,
             }
-            create_data_sensor(data_sensor)
+            create_data_sensor_repository(data_sensor)
         else:
             print("❌ Gagal melakukan prediksi.")
 
 def start_scheduled_jobs():
-    times = ['03:00','09:00', '12:00', '15:00', '19:00', '21:00', '00:00']
+    times = ['03:00','06:00','09:00', '12:00', '15:00', ' 18:00', '21:00', '00:00']
     for time in times:
         hour, minute = map(int, time.split(':'))
         scheduler.add_job(
@@ -53,5 +52,5 @@ def start_scheduled_jobs():
     scheduler.start()
     print("🕒 Penjadwalan tugas prediksi dimulai.")
 
-def get_all_data_sensors():
-    return get_all_data_sensors()
+def get_all_data_sensors_service():
+    return get_all_data_sensors_repository()

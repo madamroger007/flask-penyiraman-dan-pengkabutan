@@ -47,10 +47,11 @@
   // Listener untuk status siram
   socket.on("status_siram", (data) => {
     statusSiram = data.status;
+    console.log("Status Penyiraman:", data); // Ganti println dengan console.log
     const statusText = document.getElementById("status_siram_text");
     const icon = document.getElementById("status_siram_icon");
 
-    if (statusSiram === "ON") {
+    if (statusSiram === "1") {
       statusText.innerText = "ON (Aktif)";
       statusText.className = "text-green-600 font-bold";
       icon.className = "material-icons text-green-600";
@@ -67,7 +68,7 @@
     const statusText = document.getElementById("status_kabut_text");
     const icon = document.getElementById("status_kabut_icon");
 
-    if (statusKabut === "ON") {
+    if (statusKabut === "1") {
       statusText.innerText = "ON (Aktif)";
       statusText.className = "text-green-600 font-bold";
       icon.className = "material-icons text-green-600";
@@ -78,8 +79,9 @@
     }
   });
 
+
   function toggleSiram() {
-    const perintah = (statusSiram === "ON") ? "0" : "1";
+    const perintah = (statusSiram === "1") ? "0" : "1";
     fetch("/kontrol/penyiraman", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -88,11 +90,12 @@
   }
 
   function toggleKabut() {
-    const perintah = (statusKabut === "ON") ? "0" : "1";
+    const perintah = (statusKabut === "1") ? "0" : "1";
     fetch("/kontrol/pengkabutan", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ perintah })
     });
   }
+
 </script>

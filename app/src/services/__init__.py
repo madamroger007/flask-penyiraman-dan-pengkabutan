@@ -1,1 +1,1 @@
-from .data_sensor_service import get_all_data_sensors
+from .data_sensor_service import get_all_data_sensors_service

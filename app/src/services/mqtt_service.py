@@ -98,7 +98,6 @@ def handle_sensor_data(client, userdata, msg):
         socketio.emit("sensor_update", {
             label: latest_sensor_data[label]
         })
-        print(f"🔄 Emit WebSocket: {label} = {value}")
 
 
 # 🚀 Mulai koneksi MQTT
@@ -137,10 +136,12 @@ def run_mqtt_service():
 def kirim_perintah_siram(perintah):
     if client:
         client.publish("otomatis/siram/status", perintah)
+        socketio.emit("status_siram", {"status": perintah})
         print(f"📤 Perintah penyiraman dikirim: {perintah}")
 
 def kirim_perintah_kabut(perintah):
     if client:
         client.publish("otomatis/kabut/status", perintah)
+        socketio.emit("status_kabut", {"status": perintah})
         print(f"📤 Perintah pengkabutan dikirim: {perintah}")
 
