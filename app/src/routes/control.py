@@ -31,6 +31,7 @@ def edit_jadwal_penyiraman(id=None):
     if result["success"]:
         # setelah simpan waktu baru:
         refresh_jadwal_service("penyiraman")
+        # setelah simpan waktu baru:
         socketio.emit("jadwal_updated", {"jenis": "penyiraman", "jadwal": result["jadwal"]})
         return jsonify({"message": "Jadwal penyiraman berhasil diperbarui"}), 200
     return jsonify({"message": "Gagal memperbarui jadwal"}), 400
@@ -45,6 +46,7 @@ def edit_jadwal_pengkabutan(id=None):
 
     if result["success"]:
         refresh_jadwal_service("pengkabutan")
+        # setelah simpan waktu baru:
         socketio.emit("jadwal_updated", {"jenis": "pengkabutan", "jadwal": result["jadwal"]})
         return jsonify({"message": "Jadwal pengkabutan berhasil diperbarui"}), 200
     return jsonify({"message": "Gagal memperbarui jadwal"}), 400

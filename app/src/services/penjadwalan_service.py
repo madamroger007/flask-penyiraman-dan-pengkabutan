@@ -1,13 +1,23 @@
-from app import db,create_app
-
 from app.src.repositories.jadwal_penyiraman_repositories import update_jadwal_by_id_repository, create_jadwal_penyiraman_repository
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.cron import CronTrigger
 import pytz
 from app.src.services.control_service import kontrol_penyiraman_service,kontrol_pengkabutan_service
 from app.src.repositories.jadwal_penyiraman_repositories import get_jadwal_penyiraman_by_jenis_repository
+from flask import current_app
+from app import socketio
+scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Jakarta'))
+
+# penjadwalan_service.py
 
 scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Jakarta'))
+
+app = None  # global app instance
+
+def init_app(app_instance):
+    global app
+    app = app_instance
+
 
 def update_jadwal_service(jadwal_id, waktu_1, waktu_2, jenis):
     try:
@@ -38,20 +48,18 @@ def update_jadwal_service(jadwal_id, waktu_1, waktu_2, jenis):
 
 # Wrapper supaya fungsi kontrol dijalankan dalam Flask app context
 def kontrol_penyiraman_service_wrapper(perintah):
-    app = create_app()
     with app.app_context():
         kontrol_penyiraman_service(perintah)
 
-
 def kontrol_pengkabutan_service_wrapper(perintah):
-    app = create_app()
     with app.app_context():
         kontrol_pengkabutan_service(perintah)
 
 
+
+
 def jadwal_penyiraman_service():
     penyiraman = get_jadwal_penyiraman_by_jenis_repository(jenis_aksi='penyiraman')
-
     if not penyiraman:
         print("⚠️ Jadwal penyiraman tidak ditemukan di database.")
         return
@@ -70,9 +78,8 @@ def jadwal_penyiraman_service():
                     trigger=CronTrigger(hour=hour, minute=minute, second=0),
                     id=job_id,
                     replace_existing=True,
-                    kwargs={"perintah": "1"}
+                    kwargs={"perintah": "1"}  # <-- Inject app
                 )
-                print(f"✅ Job penyiraman ditambahkan untuk {time_obj} (ID: {job_id})")
         except Exception as e:
             print(f"❌ Gagal menambahkan job untuk waktu '{time_obj}': {e}")
 
@@ -81,6 +88,7 @@ def jadwal_penyiraman_service():
         print("🕒 Penjadwalan tugas penyiraman dimulai.")
     else:
         print("🕒 Scheduler sudah berjalan.")
+
 
 
 def jadwal_pengkabutan_service():
@@ -104,9 +112,9 @@ def jadwal_pengkabutan_service():
                     trigger=CronTrigger(hour=hour, minute=minute, second=0),
                     id=job_id,
                     replace_existing=True,
-                    kwargs={"perintah": "1"}
+                    kwargs={"perintah": "1"}  # <-- Inject app
                 )
-                print(f"✅ Job pengkabutan ditambahkan untuk {time_obj} (ID: {job_id})")
+              
         except Exception as e:
             print(f"❌ Gagal menambahkan job untuk waktu '{time_obj}': {e}")
 
@@ -124,7 +132,6 @@ def refresh_jadwal_service(jenis_aksi: str):
 
     for job_id in job_ids:
         scheduler.remove_job(job_id)
-        print(f"🗑️ Job {job_id} dihapus")
 
     if jenis_aksi == "penyiraman":
         jadwal_penyiraman_service()
@@ -132,7 +139,9 @@ def refresh_jadwal_service(jenis_aksi: str):
         jadwal_pengkabutan_service()
 
 
-def jadwal_service_utama():
-    """ Fungsi utama untuk menjadwalkan semua aksi (dipanggil sekali saat server dijalankan) """
+def jadwal_service_utama(app_instance):
+    init_app(app_instance)  # Simpan app global
     jadwal_penyiraman_service()
     jadwal_pengkabutan_service()
+
+

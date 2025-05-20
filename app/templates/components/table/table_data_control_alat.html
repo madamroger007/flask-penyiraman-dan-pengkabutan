@@ -1,20 +1,113 @@
-<div class="bg-white shadow rounded-2xl overflow-x-auto">
-    <table class="min-w-full table-auto">
-        <thead class="bg-white text-gray-700 text-sm font-semibold">
-            <tr >
-                <th class="px-4 py-3 text-center">JENIS AKSI</th>
-                <th class="px-4 py-3 text-center">STATUS</th>
-                <th class="px-4 py-3 text-center">WAKTU</th>
-            </tr>
-        </thead>
-        <tbody class="text-sm text-gray-600">
-            {% for row in table_rows %}
-            <tr class="border-t text-center">
-                <td class="px-4 py-2">{{ row.jenis_aksi }}</td>
-                <td class="px-4 py-2">{{ row.status }}</td>
-                <td class="px-4 py-2">{{ row.dibuat_sejak }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
+<div class="bg-white rounded-xl shadow-md p-4 space-y-4">
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+    <div class="flex items-center gap-2 text-sm">
+      <label for="sortSelect" class="font-medium">Urutkan:</label>
+      <select id="sortSelect" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
+        <option value="jenis_aksi">Jenis Aksi A-Z</option>
+        <option value="status">Status A-Z</option>
+        <option value="dibuat_sejak">Waktu Terbaru</option>
+      </select>
+    </div>
+
+    <div class="flex items-center gap-2 text-sm">
+      <label for="rowsPerPage" class="font-medium">Baris per halaman:</label>
+      <select id="rowsPerPage" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
+        <option value="5">5</option>
+        <option value="10" selected>10</option>
+        <option value="25">25</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="overflow-x-auto rounded-lg border border-gray-200">
+    <table class="min-w-full divide-y divide-gray-200 text-sm text-left" id="dataTable">
+      <thead class="bg-gray-50 text-gray-700 font-semibold">
+        <tr>
+          <th class="px-6 py-3 text-center">Jenis Aksi</th>
+          <th class="px-6 py-3 text-center">Status</th>
+          <th class="px-6 py-3 text-center">Waktu</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
+        {% for row in table_rows %}
+        <tr class="hover:bg-gray-50 text-center">
+          <td class="px-6 py-3">{{ row.jenis_aksi }}</td>
+          <td class="px-6 py-3">{{ row.status }}</td>
+          <td class="px-6 py-3">{{ row.dibuat_sejak }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
     </table>
+  </div>
+
+  <div id="pagination" class="flex flex-wrap justify-center gap-2 pt-2"></div>
 </div>
+{% block script %}
+<script>
+  const table = document.getElementById("dataTable");
+  const tbody = document.getElementById("tableBody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  const pagination = document.getElementById("pagination");
+  const sortSelect = document.getElementById("sortSelect");
+  const rowsPerPageSelect = document.getElementById("rowsPerPage");
+
+  let currentPage = 1;
+  let rowsPerPage = parseInt(rowsPerPageSelect.value);
+
+  function renderTable() {
+    const sortBy = sortSelect.value;
+    rows.sort((a, b) => {
+      const aText = a.querySelector(`td:nth-child(${getColumnIndex(sortBy)})`).innerText.toLowerCase();
+      const bText = b.querySelector(`td:nth-child(${getColumnIndex(sortBy)})`).innerText.toLowerCase();
+      return aText.localeCompare(bText);
+    });
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    tbody.innerHTML = "";
+    rows.slice(start, end).forEach(row => tbody.appendChild(row));
+    renderPagination();
+  }
+
+  function renderPagination() {
+    pagination.innerHTML = "";
+    const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+    for (let i = 1; i <= pageCount; i++) {
+      const btn = document.createElement("button");
+      btn.innerText = i;
+      btn.className = `px-3 py-1 rounded-lg text-sm font-medium transition ${
+        i === currentPage
+          ? 'bg-purple-600 text-white'
+          : 'bg-gray-200 hover:bg-purple-100'
+      }`;
+      btn.onclick = () => {
+        currentPage = i;
+        renderTable();
+      };
+      pagination.appendChild(btn);
+    }
+  }
+
+  function getColumnIndex(key) {
+    if (key === "jenis_aksi") return 1;
+    if (key === "status") return 2;
+    if (key === "dibuat_sejak") return 3;
+    return 1;
+  }
+
+  sortSelect.addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  rowsPerPageSelect.addEventListener("change", () => {
+    rowsPerPage = parseInt(rowsPerPageSelect.value);
+    currentPage = 1;
+    renderTable();
+  });
+
+  renderTable();
+</script>
+{% endblock %}

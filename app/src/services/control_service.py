@@ -34,11 +34,7 @@ def auto_control_loop():
 
         if kelembapan_tanah is not None and kelembapan_tanah > 50:
             kirim_perintah_siram("0")
-            print(f"🔔 [AutoControl] Kelembapan tanah {kelembapan_tanah} > 50, kirim perintah siram=0")
-
         if suhu_udara is not None and kelembapan_udara is not None:
-            if suhu_udara > 30 and kelembapan_udara > 50:
+            if suhu_udara < 30 and kelembapan_udara > 50:
                 kirim_perintah_kabut("0")
-                print(f"🔔 [AutoControl] Suhu udara {suhu_udara} > 30 dan kelembapan udara {kelembapan_udara} > 50, kirim perintah kabut=0")
-
-        time.sleep(1)
+        time.sleep(5)

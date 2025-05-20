@@ -43,38 +43,6 @@ def on_connect(client, userdata, flags, rc, properties=None):
     else:
         print(f"❌ Koneksi MQTT gagal, kode: {rc}")
 
-# 📥 Callback status penyiraman
-def handle_siram_status(client, userdata, msg):
-    status = msg.payload.decode('utf-8').strip()
-    print(f"🚿 Status penyiraman diterima: {status}")
-
-    # Emit ke WebSocket
-    socketio.emit("status_siram", {"status": status})
-    print("🔄 Emit WebSocket: status_siram")
-
-    # Kirim ke Flask endpoint
-    try:
-        response = requests.post(f"{FLASK_URL}/otomatis/siram", json={"status": status})
-        print("📤 Kirim status siram ke server:", response.status_code)
-    except Exception as e:
-        print(f"❌ Gagal kirim ke server: {e}")
-
-# 📥 Callback status pengkabutan
-def handle_kabut_status(client, userdata, msg):
-    status = msg.payload.decode('utf-8').strip()
-    print(f"💨 Status pengkabutan diterima: {status}")
-
-    # Emit ke WebSocket
-    socketio.emit("status_kabut", {"status": status})
-    print("🔄 Emit WebSocket: status_kabut")
-
-    # Kirim ke Flask endpoint
-    try:
-        response = requests.post(f"{FLASK_URL}/otomatis/kabut", json={"status": status})
-        print("📤 Kirim status kabut ke server:", response.status_code)
-    except Exception as e:
-        print(f"❌ Gagal kirim ke server: {e}")
-
 # 📥 Callback data sensor
 def handle_sensor_data(client, userdata, msg):
     topic = msg.topic
@@ -93,11 +61,10 @@ def handle_sensor_data(client, userdata, msg):
         except ValueError:
             print(f"❌ Nilai sensor tidak valid: {value}")
             return
+        
+        socketio.emit("sensor_update", latest_sensor_data)
+        print(f"📊 Data sensor {label}: {latest_sensor_data[label]}")
 
-        # Emit data via WebSocket
-        socketio.emit("sensor_update", {
-            label: latest_sensor_data[label]
-        })
 
 
 # 🚀 Mulai koneksi MQTT
@@ -110,8 +77,6 @@ def run_mqtt_service():
     client.tls_set(ca_certs=certifi.where(), tls_version=ssl.PROTOCOL_TLS_CLIENT)
     
     client.on_connect = on_connect
-    client.message_callback_add("otomatis/siram/status", handle_siram_status)
-    client.message_callback_add("otomatis/kabut/status", handle_kabut_status)
     client.message_callback_add("sensor/kelembapan_tanah", handle_sensor_data)
     client.message_callback_add("sensor/suhu_udara", handle_sensor_data)
     client.message_callback_add("sensor/kelembapan_udara", handle_sensor_data)
@@ -126,7 +91,7 @@ def run_mqtt_service():
 
     try:
         while True:
-            time.sleep(1)
+            time.sleep(3)
     except KeyboardInterrupt:
         print("🛑 Menutup koneksi MQTT...")
         client.disconnect()
@@ -137,11 +102,13 @@ def kirim_perintah_siram(perintah):
     if client:
         client.publish("otomatis/siram/status", perintah)
         socketio.emit("status_siram", {"status": perintah})
-        print(f"📤 Perintah penyiraman dikirim: {perintah}")
+        print(f"📤 Perintah penyiraman: {perintah}")
+       
 
 def kirim_perintah_kabut(perintah):
     if client:
         client.publish("otomatis/kabut/status", perintah)
         socketio.emit("status_kabut", {"status": perintah})
-        print(f"📤 Perintah pengkabutan dikirim: {perintah}")
+        print(f"📤 Perintah pengkabutan: {perintah}")
+
 

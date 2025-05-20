@@ -1,8 +1,8 @@
-"""empty message
+"""init migrate
 
-Revision ID: 02436896c199
+Revision ID: 31a1c0b465f9
 Revises: 
-Create Date: 2025-05-19 13:16:19.080918
+Create Date: 2025-05-20 23:05:00.080199
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '02436896c199'
+revision = '31a1c0b465f9'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -25,22 +25,23 @@ def upgrade():
     sa.Column('kelembapan_tanah', sa.Float(), nullable=True),
     sa.Column('penyiraman', sa.Boolean(), nullable=True),
     sa.Column('pengkabutan', sa.Boolean(), nullable=True),
-    sa.Column('dibuat_sejak', sa.DateTime(), nullable=True),
+    sa.Column('dibuat_sejak', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('jadwal_penyiraman',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('waktu_1', sa.Time(), nullable=True),
-    sa.Column('waktu_2', sa.Time(), nullable=True),
+    sa.Column('waktu_1', sa.Time(timezone=True), nullable=True),
+    sa.Column('waktu_2', sa.Time(timezone=True), nullable=True),
     sa.Column('jenis_aksi', sa.Enum('penyiraman', 'pengkabutan', name='jenis_aksi_enum'), nullable=True),
-    sa.Column('dibuat_sejak', sa.DateTime(), nullable=True),
-    sa.Column('diubah_sejak', sa.DateTime(), nullable=True),
+    sa.Column('dibuat_sejak', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('diubah_sejak', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('nomor_hp',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('nomor_hp', sa.String(length=15), nullable=False),
-    sa.Column('dibuat_sejak', sa.DateTime(), nullable=True),
+    sa.Column('dibuat_sejak', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('diubah_sejak', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('nomor_hp')
     )
@@ -48,7 +49,7 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('jenis_aksi', sa.Enum('penyiraman', 'pengkabutan', name='riwayat_aksi_enum'), nullable=True),
     sa.Column('status', sa.Enum('aktif', 'nonaktif', name='status_aksi_enum'), nullable=True),
-    sa.Column('dibuat_sejak', sa.DateTime(), nullable=True),
+    sa.Column('dibuat_sejak', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
     # ### end Alembic commands ###

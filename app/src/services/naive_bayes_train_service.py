@@ -90,20 +90,14 @@ def predict_status(sensor_data):
             'Kelembapan Tanah': float(sensor_data['Kelembapan Tanah'])
         }])
 
-        # df_raw = pd.DataFrame([{
-        #     'Suhu Udara': 25,
-        #     'Kelembapan Udara': 80,
-        #     'Kelembapan Tanah': 50
-        # }])
-        
+
         # Pastikan tipe data kolom adalah numerik
         df_raw = df_raw.apply(pd.to_numeric, errors='coerce')
-        print("Tipe data kolom:", df_raw.dtypes)
-        print("Data untuk prediksi:", df_raw)
+
 
         prediction = model.predict(df_raw)[0]
         result = dict(zip(target_columns, prediction))
-        print(f"🔮 Prediksi status: {result}")
+   
         return result
     except Exception as e:
         print(f"❌ Gagal melakukan prediksi: {e}")

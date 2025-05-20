@@ -1,39 +1,137 @@
-<div class="bg-white shadow rounded-2xl overflow-x-auto">
-    <table class="min-w-full table-auto">
-        <thead class="bg-white text-gray-700 text-sm font-semibold">
-            <tr>
-                <th class="px-4 py-3 text-left">K. UDARA</th>
-                <th class="px-4 py-3 text-left">K. TANAH</th>
-                <th class="px-4 py-3 text-left">SUHU</th>
-                <th class="px-4 py-3 text-left">PENYIRAMAN</th>
-                <th class="px-4 py-3 text-left">PENGKABUTAN</th>
-                <th class="px-4 py-3 text-left">WAKTU</th>
+<div class="flex justify-between items-center mb-4">
+  <label class="text-sm">
+    Urutkan:
+    <select id="sortSelect" class="border px-2 py-1 rounded">
+      <option value="kelembapan_udara">K. Udara</option>
+      <option value="kelembapan_tanah">K. Tanah</option>
+      <option value="suhu">Suhu</option>
+      <option value="penyiraman">Penyiraman</option>
+      <option value="pengkabutan">Pengkabutan</option>
+      <option value="dibuat_sejak">Waktu Terbaru</option>
+    </select>
+  </label>
 
-            </tr>
-        </thead>
-        <tbody class="text-sm text-gray-600">
-            {% for row in table_rows %}
-            <tr class="border-t">
-                <td class="px-4 py-2">{{ row.kelembapan_udara }}</td>
-                <td class="px-4 py-2">{{ row.kelembapan_tanah }}</td>
-                <td class="px-4 py-2">{{ row.suhu }}</td>
-                <td class="px-4 py-2">
-                    {% if row.penyiraman %}
-                        perlu
-                    {% else %}
-                        tidak perlu
-                    {% endif %}
-                </td>
-                <td class="px-4 py-2">
-                    {% if row.pengkabutan %}
-                        perlu
-                    {% else %}
-                        tidak perlu
-                    {% endif %}
-                </td>
-                <td class="px-4 py-2">{{ row.dibuat_sejak }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+  <label class="text-sm">
+    Baris per halaman:
+    <select id="rowsPerPage" class="border px-2 py-1 rounded">
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="25">25</option>
+    </select>
+  </label>
 </div>
+<div class="bg-white rounded-xl shadow-md p-4 overflow-x-auto">
+  <table class="min-w-full divide-y divide-gray-200 text-sm" id="monitorTable">
+    <thead class="bg-gray-50 text-gray-700 font-semibold">
+      <tr>
+        <th class="px-6 py-3 text-left">K. Udara</th>
+        <th class="px-6 py-3 text-left">K. Tanah</th>
+        <th class="px-6 py-3 text-left">Suhu</th>
+        <th class="px-6 py-3 text-left">Penyiraman</th>
+        <th class="px-6 py-3 text-left">Pengkabutan</th>
+        <th class="px-6 py-3 text-left">Waktu</th>
+      </tr>
+    </thead>
+    <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
+      {% for row in table_rows %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-6 py-3">{{ row.kelembapan_udara }}</td>
+        <td class="px-6 py-3">{{ row.kelembapan_tanah }}</td>
+        <td class="px-6 py-3">{{ row.suhu }}</td>
+        <td class="px-6 py-3">
+          {% if row.penyiraman %}
+            Perlu
+          {% else %}
+            Tidak Perlu
+          {% endif %}
+        </td>
+        <td class="px-6 py-3">
+          {% if row.pengkabutan %}
+            Perlu
+          {% else %}
+            Tidak Perlu
+          {% endif %}
+        </td>
+        <td class="px-6 py-3">{{ row.dibuat_sejak }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Pagination button container -->
+<div id="pagination" class="flex gap-1 mt-4 flex-wrap"></div>
+
+{% block script %}
+<script>
+  const tbody = document.getElementById("tableBody");
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  const sortSelect = document.getElementById("sortSelect");
+  const rowsPerPageSelect = document.getElementById("rowsPerPage");
+  const pagination = document.getElementById("pagination");
+
+  let currentPage = 1;
+  let rowsPerPage = parseInt(rowsPerPageSelect.value);
+
+  function getColumnIndex(key) {
+    switch (key) {
+      case "kelembapan_udara": return 1;
+      case "kelembapan_tanah": return 2;
+      case "suhu": return 3;
+      case "penyiraman": return 4;
+      case "pengkabutan": return 5;
+      case "dibuat_sejak": return 6;
+      default: return 1;
+    }
+  }
+
+  function renderTable() {
+    const sortBy = sortSelect.value;
+    const colIndex = getColumnIndex(sortBy);
+
+    rows.sort((a, b) => {
+      const aText = a.querySelector(`td:nth-child(${colIndex})`).innerText.toLowerCase();
+      const bText = b.querySelector(`td:nth-child(${colIndex})`).innerText.toLowerCase();
+
+      return aText.localeCompare(bText);
+    });
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+
+    tbody.innerHTML = "";
+    rows.slice(start, end).forEach(row => tbody.appendChild(row));
+
+    renderPagination();
+  }
+
+  function renderPagination() {
+    pagination.innerHTML = "";
+    const pageCount = Math.ceil(rows.length / rowsPerPage);
+
+    for (let i = 1; i <= pageCount; i++) {
+      const btn = document.createElement("button");
+      btn.innerText = i;
+      btn.className = `px-3 py-1 rounded ${i === currentPage ? 'bg-purple-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}`;
+      btn.onclick = () => {
+        currentPage = i;
+        renderTable();
+      };
+      pagination.appendChild(btn);
+    }
+  }
+
+  sortSelect.addEventListener("change", () => {
+    currentPage = 1;
+    renderTable();
+  });
+
+  rowsPerPageSelect.addEventListener("change", () => {
+    rowsPerPage = parseInt(rowsPerPageSelect.value);
+    currentPage = 1;
+    renderTable();
+  });
+
+  renderTable();
+</script>
+{% endblock %}
