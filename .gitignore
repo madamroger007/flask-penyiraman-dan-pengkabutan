@@ -42,3 +42,5 @@ app/train model/static/snapshots/
 tmp/
 temp/
 static/snapshots/*
+
+twilio_2FA_recovery_code.txt

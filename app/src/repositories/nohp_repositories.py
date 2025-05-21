@@ -1,14 +1,14 @@
 from app import db
-from app.src.model.schemas.nomor_hp import NomorHp
+from app.src.model.schemas.nomor_hp import NomorHP
 
 def get_all_nomor_hp():
-    return NomorHp.query.all()
+    return NomorHP.query.all()
 
 def get_nomor_hp_by_id(nomor_hp_id):
-    return NomorHp.query.get(nomor_hp_id)
+    return NomorHP.query.get(nomor_hp_id)
 
 def create_nomor_hp(nomor_hp):
-    new_nomor_hp = NomorHp(**nomor_hp)
+    new_nomor_hp = NomorHP(nomor_hp=nomor_hp)
     db.session.add(new_nomor_hp)
     db.session.commit()
     return new_nomor_hp

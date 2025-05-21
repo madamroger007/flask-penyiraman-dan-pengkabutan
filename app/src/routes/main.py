@@ -5,6 +5,9 @@ from app.src.routes.validation.login import login_required
 from app.src.services.data_sensor_service import get_all_data_sensors_service
 from app.src.services.control_service import get_jadwal_penyiraman_service
 from app.src.repositories.jadwal_penyiraman_repositories import get_jadwal_penyiraman_by_jenis_repository
+from app.src.repositories.nohp_repositories import (
+    get_all_nomor_hp,
+)
 main = Blueprint('main', __name__)
 @main.route('/')
 @login_required
@@ -40,4 +43,9 @@ def control():
 @main.route('/whatsapp', methods=['GET'])
 @login_required
 def whatsapp():
-    return render_template('pages/notification/whatapps.html')
+    # Mengambil data jadwal penyiraman dari service
+    get_nomor_hp = get_all_nomor_hp()
+    if get_nomor_hp is None:
+        flash("Nomor WhatsApp tidak ditemukan.", "danger")
+        return redirect(url_for('main.index'))
+    return render_template('pages/notification/whatapps.html', table_rows=get_nomor_hp)
