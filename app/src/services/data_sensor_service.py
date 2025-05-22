@@ -69,9 +69,10 @@ def _scheduled_prediction(app):
 
 
 def start_scheduled_jobs(app):
-    times = ['03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:03']
+    times = ['03:00', '06:00', '09:00', '12:00', '15:00', '18:00', '21:00', '00:00']
     for time_str in times:
         hour, minute = map(int, time_str.strip().split(':'))
+        
         scheduler.add_job(
             _scheduled_prediction,
             CronTrigger(hour=hour, minute=minute, second=0),
