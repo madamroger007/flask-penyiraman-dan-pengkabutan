@@ -20,10 +20,6 @@ instance/
 .DS_Store
 Thumbs.db
 
-# Snapshot folder (jika tidak ingin menyimpan di git)
-app/static/snapshots/captured/
-app/train model/static/snapshots/
-
 
 # Log files
 *.log
@@ -44,3 +40,4 @@ temp/
 static/snapshots/*
 
 twilio_2FA_recovery_code.txt
+app/src/model/migrations
