@@ -54,8 +54,13 @@ sensor_last_change = {
     "Kelembapan Tanah": None
 }
 
-SENSOR_TIMEOUT_SECONDS = 10
-SENSOR_STALE_SECONDS = 60  # ⏰ Jika nilai tidak berubah dalam 1 menit, beri peringatan
+check_times = [1, 5, 15, 24]  # jam
+next_check_time = {
+    jam: datetime.now() + timedelta(hours=jam) for jam in check_times
+}
+
+SENSOR_RESET_HOURS = 24  # reset jika 24 jam tidak ada perubahan nilai
+SENSOR_STALE_SECONDS = 60  # peringatan jika 1 menit tidak berubah
 
 client = None
 
@@ -113,17 +118,18 @@ def check_sensor_status():
         val = latest_sensor_data[label]
 
         # Reset jika data sudah usang
-        if last_seen and (now - last_seen).total_seconds() > SENSOR_TIMEOUT_SECONDS:
+        if last_change and (now - last_change).total_seconds() > SENSOR_RESET_HOURS * 3600:
             if val is not None:
                 latest_sensor_data[label] = None
                 updated = True
-                print(f"⚠️ Data {label} tidak update >{SENSOR_TIMEOUT_SECONDS}s. Di-reset.")
+                print(f"⚠️ Data {label} tidak berubah selama {SENSOR_RESET_HOURS} jam Di-reset.")
         
-        # Peringatan jika tidak berubah dalam 60 detik
+        # Peringatan jika tidak berubah dalam 1 jam
         if last_change and (now - last_change).total_seconds() > SENSOR_STALE_SECONDS:
             notify_sensor_data_Service(
                 f"🚨 Peringatan: {label} tidak berubah selama lebih dari 1 jam.\n"
-                f" Cek sinyal atau perangkat.\n",  app_context
+                f" Cek sinyal atau perangkat.\n"
+                f" Cek Dashboard: {os.environ.get('FLASK_URL')}",  app_context
             )
             print(f"🚨 WARNING: {label} tidak berubah selama lebih dari 1 jam")
 
@@ -156,9 +162,17 @@ def run_mqtt_service(app_instance):
 
     try:
         while True:
-            check_sensor_status()
+            now = datetime.now()
 
-            time.sleep(3600)  # Cek setiap 1 jam
+            for jam in check_times:
+                if now >= next_check_time[jam]:
+                    print(f"⏱️ Menjalankan pengecekan sensor untuk jam ke-{jam}")
+                    check_sensor_status()
+                    # Jadwalkan ulang jam ke-jam berikutnya
+                    next_check_time[jam] = now + timedelta(hours=jam)
+
+            time.sleep(60)  # cek setiap 1 menit apakah waktunya eksekusi
+            
     except KeyboardInterrupt:
         print("🛑 Menutup koneksi MQTT...")
         client.disconnect()
