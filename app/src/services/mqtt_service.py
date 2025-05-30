@@ -54,10 +54,15 @@ sensor_last_change = {
     "Kelembapan Tanah": None
 }
 
-check_times = [1, 5, 15, 24]  # jam
-next_check_time = {
-    jam: datetime.now() + timedelta(hours=jam) for jam in check_times
+sensor_alert_sent = {
+    "Suhu Udara": False,
+    "Kelembapan Udara": False,
+    "Kelembapan Tanah": False
 }
+
+
+check_times = [1, 5, 15, 24]  # jam
+
 
 SENSOR_RESET_HOURS = 24  # reset jika 24 jam tidak ada perubahan nilai
 SENSOR_STALE_SECONDS = 60  # peringatan jika 1 menit tidak berubah
@@ -136,6 +141,20 @@ def check_sensor_status():
     if updated:
         socketio.emit("sensor_update", latest_sensor_data)
 
+# Inisialisasi waktu pengecekan berikutnya
+def init_next_check_times():
+    now = datetime.now()
+    next_times = {}
+    for jam in check_times:
+        scheduled_time = now.replace(hour=jam % 24, minute=0, second=0, microsecond=0)
+        if scheduled_time <= now:
+            scheduled_time += timedelta(days=1)  # Jadwalkan untuk hari berikutnya
+        next_times[jam] = scheduled_time
+    return next_times
+
+# Inisialisasi waktu pengecekan berikutnya
+next_check_time = init_next_check_times()
+
 # 🚀 Jalankan MQTT
 def run_mqtt_service(app_instance):
     global app_context
@@ -169,7 +188,7 @@ def run_mqtt_service(app_instance):
                     print(f"⏱️ Menjalankan pengecekan sensor untuk jam ke-{jam}")
                     check_sensor_status()
                     # Jadwalkan ulang jam ke-jam berikutnya
-                    next_check_time[jam] = now + timedelta(hours=jam)
+                    next_check_time[jam] += timedelta(days=1)
 
             time.sleep(60)  # cek setiap 1 menit apakah waktunya eksekusi
             
