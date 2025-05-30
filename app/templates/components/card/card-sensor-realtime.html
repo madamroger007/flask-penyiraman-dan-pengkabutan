@@ -26,7 +26,9 @@
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 <script src="https://cdn.socket.io/4.6.1/socket.io.min.js"></script>
 <script>
-  const socket = io(); // Default connects to same host
+  const socket = io("{{ config['FLASK_URL'] }}", {
+    transports: ['websocket'],
+  }); // Default connects to same host
   let socketInitialized = false;
   document.addEventListener('alpine:init', () => {
     Alpine.data('dashboardData', () => ({

@@ -99,7 +99,7 @@ def handle_sensor_data(client, userdata, msg):
         latest_sensor_data[label] = value_float
         sensor_last_seen[label] = now
 
-        print(f"📊 {label}: {value_float}")
+        
         socketio.emit("sensor_update", latest_sensor_data)
 
 # ⛔ Cek timeout data dan perubahan nilai
@@ -169,10 +169,9 @@ def kirim_perintah_siram(perintah):
     if client:
         client.publish("otomatis/siram/status", perintah)
         socketio.emit("status_siram", {"status": perintah})
-        print(f"📤 Kirim perintah siram: {perintah}")
 
 def kirim_perintah_kabut(perintah):
     if client:
         client.publish("otomatis/kabut/status", perintah)
         socketio.emit("status_kabut", {"status": perintah})
-        print(f"📤 Kirim perintah kabut: {perintah}")
+        

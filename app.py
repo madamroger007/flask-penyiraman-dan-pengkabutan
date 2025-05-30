@@ -11,8 +11,8 @@ app = create_app()
 def start_background_services():
     threading.Thread(target=lambda: run_mqtt_service(app), daemon=True).start()
     threading.Thread(target=lambda: start_scheduled_jobs(app), daemon=True).start()
-    threading.Thread(target=auto_control_loop, daemon=True).start()
-    threading.Thread(target=train_naive_bayes, daemon=True).start()
+    threading.Thread(target=lambda: auto_control_loop, daemon=True).start()
+    threading.Thread(target=lambda: train_naive_bayes, daemon=True).start()
 
     def run_jadwal():
         with app.app_context():
@@ -23,4 +23,4 @@ def start_background_services():
 
 if __name__ == "__main__":
     start_background_services()
-    socketio.run(app, debug=True, host='0.0.0.0', port=5000, use_reloader=False)
+    socketio.run(app, debug=True, port=5000, use_reloader=False)

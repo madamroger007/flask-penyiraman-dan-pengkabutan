@@ -3,10 +3,13 @@
   <h2 class="text-blue-700 font-semibold mb-4">Edit Waktu Penyiraman</h2>
   <div class="space-y-4">
     <div class="grid grid-cols-2 gap-4">
-      <input type="time" id="input-waktu-penyiraman-1" value="{{waktu_1_penyiraman}}" class="w-full border rounded-lg px-3 py-2 text-center" />
-      <input type="time" id="input-waktu-penyiraman-2" value="{{waktu_2_penyiraman}}" class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-penyiraman-1" value="{{waktu_1_penyiraman}}"
+        class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-penyiraman-2" value="{{waktu_2_penyiraman}}"
+        class="w-full border rounded-lg px-3 py-2 text-center" />
     </div>
-    <button onclick="updatePenyiraman()" class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
+    <button onclick="updatePenyiraman()"
+      class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
   </div>
   <p class="text-sm mt-2 text-green-600" id="msg-penyiraman"></p>
 </div>
@@ -16,10 +19,13 @@
   <h2 class="text-blue-700 font-semibold mb-4">Edit Waktu Pengkabutan</h2>
   <div class="space-y-4">
     <div class="grid grid-cols-2 gap-4">
-      <input type="time" id="input-waktu-pengkabutan-1" value="{{waktu_1_pengkabutan}}" class="w-full border rounded-lg px-3 py-2 text-center" />
-      <input type="time" id="input-waktu-pengkabutan-2" value="{{waktu_2_pengkabutan}}" class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-pengkabutan-1" value="{{waktu_1_pengkabutan}}"
+        class="w-full border rounded-lg px-3 py-2 text-center" />
+      <input type="time" id="input-waktu-pengkabutan-2" value="{{waktu_2_pengkabutan}}"
+        class="w-full border rounded-lg px-3 py-2 text-center" />
     </div>
-    <button onclick="updatePengkabutan()" class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
+    <button onclick="updatePengkabutan()"
+      class="w-full bg-blue-600 text-white py-2 rounded-full hover:bg-blue-700">Save</button>
   </div>
   <p class="text-sm mt-2 text-green-600" id="msg-pengkabutan"></p>
 </div>
@@ -29,9 +35,11 @@
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
 <script>
   // Cegah deklarasi socket berulang
-  window.socket = window.socket || io();
+  window.socket = window.socket || io("{{ config['FLASK_URL'] }}", {
+    transports: ['websocket'],
+  });
 
-  window.updatePenyiraman = async function() {
+  window.updatePenyiraman = async function () {
     const waktu1 = document.getElementById("input-waktu-penyiraman-1").value;
     const waktu2 = document.getElementById("input-waktu-penyiraman-2").value;
 
@@ -55,7 +63,7 @@
     document.getElementById("msg-penyiraman").innerText = result.message;
   };
 
-  window.updatePengkabutan = async function() {
+  window.updatePengkabutan = async function () {
     const waktu1 = document.getElementById("input-waktu-pengkabutan-1").value;
     const waktu2 = document.getElementById("input-waktu-pengkabutan-2").value;
 

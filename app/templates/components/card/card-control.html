@@ -38,7 +38,9 @@
 <!-- ✅ SCRIPT ADA DI BAWAH AGAR ELEMEN DOM SUDAH TERLOAD -->
 <script>
   // Inisialisasi socket setelah script socket.io dimuat
-  const socket = io();
+  const socket = io("{{ config['FLASK_URL'] }}", {
+    transports: ['websocket'],
+  });
 
   // ✅ Variabel status HARUS dideklarasikan sebelum digunakan
   let statusSiram = "OFF";
