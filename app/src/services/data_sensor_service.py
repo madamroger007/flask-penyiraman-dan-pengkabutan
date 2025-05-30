@@ -41,7 +41,7 @@ def _scheduled_prediction(app):
             'penyiraman': status_penyiraman == 'Perlu' if status_penyiraman == True else False,
             'pengkabutan': status_pengkabutan == 'Perlu' if status_pengkabutan == True else False,
         }
-
+        print(f"📊 Data sensor: {data_sensor}")
         # Kirim notifikasi jika perlu
         if status_penyiraman == 'Perlu':
             notify_sensor_data_Service(
@@ -65,7 +65,7 @@ def _scheduled_prediction(app):
 
 
 def start_scheduled_jobs(app):
-    times = ['03:00', '06:00', '09:00', '13:00', '15:00', '18:00', '21:00', '00:00']
+    times = ['03:00', '06:00', '09:00', '13:00', '15:00', '18:07', '21:00', '00:00']
     for time_str in times:
         hour, minute = map(int, time_str.strip().split(':'))
         
