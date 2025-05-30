@@ -4,8 +4,8 @@ from apscheduler.triggers.cron import CronTrigger
 import pytz
 from app.src.services.control_service import kontrol_penyiraman_service,kontrol_pengkabutan_service
 from app.src.repositories.jadwal_penyiraman_repositories import get_jadwal_penyiraman_by_jenis_repository
-from flask import current_app
-from app import socketio
+from app.src.services.notification_service import notify_sensor_data_Service
+import datetime
 scheduler = BackgroundScheduler(timezone=pytz.timezone('Asia/Jakarta'))
 
 # penjadwalan_service.py
@@ -46,7 +46,6 @@ def update_jadwal_service(jadwal_id, waktu_1, waktu_2, jenis):
         return {"success": False}
 
 
-# Wrapper supaya fungsi kontrol dijalankan dalam Flask app context
 def kontrol_penyiraman_service_wrapper(perintah):
     with app.app_context():
         kontrol_penyiraman_service(perintah)
@@ -54,8 +53,7 @@ def kontrol_penyiraman_service_wrapper(perintah):
 def kontrol_pengkabutan_service_wrapper(perintah):
     with app.app_context():
         kontrol_pengkabutan_service(perintah)
-
-
+        
 
 
 def jadwal_penyiraman_service():
