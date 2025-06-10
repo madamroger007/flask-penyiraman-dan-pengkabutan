@@ -4,6 +4,9 @@ from app.src.services.penjadwalan_service import update_jadwal_service
 from app import socketio
 from flask_socketio import emit
 from app.src.services.penjadwalan_service import refresh_jadwal_service
+from app.src.routes.validation.login import login_required
+from app.src.repositories.riwayat_aksi_repositories import delete_riwayat_aksi_repository
+
 control = Blueprint('control', __name__)
 
 @control.route('/kontrol/penyiraman', methods=['POST'])
@@ -50,3 +53,16 @@ def edit_jadwal_pengkabutan(id=None):
         socketio.emit("jadwal_updated", {"jenis": "pengkabutan", "jadwal": result["jadwal"]})
         return jsonify({"message": "Jadwal pengkabutan berhasil diperbarui"}), 200
     return jsonify({"message": "Gagal memperbarui jadwal"}), 400
+
+
+@control.route('/riwayat/delete', methods=['POST'])
+@login_required
+def riwayat_delete():
+    ids = request.json.get('ids', [])
+    deleted_count = 0
+
+    for riwayat_id in ids:
+        if delete_riwayat_aksi_repository(riwayat_id):
+            deleted_count += 1
+
+    return jsonify({'success': True, 'deleted': deleted_count})

@@ -2,7 +2,8 @@
   <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
     <div class="flex items-center gap-2 text-sm">
       <label for="sortSelect" class="font-medium">Urutkan:</label>
-      <select id="sortSelect" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
+      <select id="sortSelect"
+        class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
         <option value="jenis_aksi">Jenis Aksi A-Z</option>
         <option value="status">Status A-Z</option>
         <option value="dibuat_sejak">Waktu Terbaru</option>
@@ -11,7 +12,8 @@
 
     <div class="flex items-center gap-2 text-sm">
       <label for="rowsPerPage" class="font-medium">Baris per halaman:</label>
-      <select id="rowsPerPage" class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
+      <select id="rowsPerPage"
+        class="border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-purple-500">
         <option value="5">5</option>
         <option value="10" selected>10</option>
         <option value="25">25</option>
@@ -19,10 +21,17 @@
     </div>
   </div>
 
-  <div class="overflow-x-auto rounded-lg border border-gray-200">
+  <div class="overflow-x-auto rounded-lg ">
+    <div class="flex justify-end">
+      <button id="deleteButton" class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 text-sm">
+        Hapus Terpilih
+      </button>
+    </div>
+    <!-- Tambahkan kolom checkbox pada tabel -->
     <table class="min-w-full divide-y divide-gray-200 text-sm text-left" id="dataTable">
       <thead class="bg-gray-50 text-gray-700 font-semibold">
         <tr>
+          <th class="px-6 py-3 text-center"><input type="checkbox" id="selectAll" /></th>
           <th class="px-6 py-3 text-center">Jenis Aksi</th>
           <th class="px-6 py-3 text-center">Status</th>
           <th class="px-6 py-3 text-center">Waktu</th>
@@ -30,7 +39,8 @@
       </thead>
       <tbody id="tableBody" class="divide-y divide-gray-100 text-gray-700">
         {% for row in table_rows %}
-        <tr class="hover:bg-gray-50 text-center">
+        <tr class="hover:bg-gray-50 text-center" data-id="{{ row.id }}">
+          <td class="px-6 py-3"><input type="checkbox" class="rowCheckbox" /></td>
           <td class="px-6 py-3">{{ row.jenis_aksi }}</td>
           <td class="px-6 py-3">{{ row.status }}</td>
           <td class="px-6 py-3">{{ row.dibuat_sejak }}</td>
@@ -54,11 +64,70 @@
   let currentPage = 1;
   let rowsPerPage = parseInt(rowsPerPageSelect.value);
 
+  // Checkbox "Pilih Semua"
+  document.getElementById("selectAll").addEventListener("change", function () {
+    const checkboxes = document.querySelectorAll(".rowCheckbox");
+    checkboxes.forEach(cb => cb.checked = this.checked);
+  });
+
+  // Tombol Hapus
+  document.getElementById("deleteButton").addEventListener("click", function () {
+    const selected = Array.from(document.querySelectorAll(".rowCheckbox:checked"));
+    if (selected.length === 0) {
+      alert("Tidak ada baris yang dipilih.");
+      return;
+    }
+
+    if (!confirm(`Yakin ingin menghapus ${selected.length} data?`)) return;
+
+    const ids = selected.map(cb => cb.closest("tr").getAttribute("data-id"));
+
+    fetch("/riwayat/delete", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          alert(`${data.deleted} data berhasil dihapus`);
+          location.reload();  // Refresh halaman
+        } else {
+          alert("Gagal menghapus data");
+        }
+      })
+      .catch(() => alert("Terjadi kesalahan saat menghapus"));
+  });
+
+
+  function getColumnIndex(key) {
+    if (key === "jenis_aksi") return 1;
+    if (key === "status") return 2;
+    if (key === "dibuat_sejak") return 3;
+    return 1;
+  }
+
   function renderTable() {
     const sortBy = sortSelect.value;
+    const colIndex = getColumnIndex(sortBy);
+
     rows.sort((a, b) => {
-      const aText = a.querySelector(`td:nth-child(${getColumnIndex(sortBy)})`).innerText.toLowerCase();
-      const bText = b.querySelector(`td:nth-child(${getColumnIndex(sortBy)})`).innerText.toLowerCase();
+      const aText = a.querySelector(`td:nth-child(${colIndex})`).innerText.trim();
+      const bText = b.querySelector(`td:nth-child(${colIndex})`).innerText.trim();
+
+      // Urutkan tanggal terbaru ke atas
+      if (sortBy === "dibuat_sejak") {
+        const aDate = new Date(aText);
+        const bDate = new Date(bText);
+        return bDate - aDate;
+      }
+
+      // Jika angka
+      if (!isNaN(parseFloat(aText)) && !isNaN(parseFloat(bText))) {
+        return parseFloat(bText) - parseFloat(aText);
+      }
+
+      // Default: string, urut Z ke A
       return aText.localeCompare(bText);
     });
 
@@ -77,24 +146,16 @@
     for (let i = 1; i <= pageCount; i++) {
       const btn = document.createElement("button");
       btn.innerText = i;
-      btn.className = `px-3 py-1 rounded-lg text-sm font-medium transition ${
-        i === currentPage
-          ? 'bg-purple-600 text-white'
-          : 'bg-gray-200 hover:bg-purple-100'
-      }`;
+      btn.className = `px-3 py-1 rounded-lg text-sm font-medium transition ${i === currentPage
+        ? 'bg-purple-600 text-white'
+        : 'bg-gray-200 hover:bg-purple-100'
+        }`;
       btn.onclick = () => {
         currentPage = i;
         renderTable();
       };
       pagination.appendChild(btn);
     }
-  }
-
-  function getColumnIndex(key) {
-    if (key === "jenis_aksi") return 1;
-    if (key === "status") return 2;
-    if (key === "dibuat_sejak") return 3;
-    return 1;
   }
 
   sortSelect.addEventListener("change", () => {

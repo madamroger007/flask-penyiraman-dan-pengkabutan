@@ -21,3 +21,11 @@ def update_riwayat_aksi_repository(riwayat_aksi_id, data):
         db.session.commit()
         return riwayat_aksi
     return None
+
+def delete_riwayat_aksi_repository(riwayat_aksi_id):
+    riwayat_aksi = RiwayatAksi.query.get(riwayat_aksi_id)
+    if riwayat_aksi:
+        db.session.delete(riwayat_aksi)
+        db.session.commit()
+        return True
+    return False

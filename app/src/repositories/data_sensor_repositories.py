@@ -14,3 +14,11 @@ def create_data_sensor_repository(data: Dict[str, Any]) -> DataSensor:
     db.session.add(data_sensor)
     db.session.commit()
     return data_sensor
+
+def delete_data_sensor_repository(data_sensor_id: int) -> bool:
+    data_sensor = DataSensor.query.get(data_sensor_id)
+    if data_sensor:
+        db.session.delete(data_sensor)
+        db.session.commit()
+        return True
+    return False
