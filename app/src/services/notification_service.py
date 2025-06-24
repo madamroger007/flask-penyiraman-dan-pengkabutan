@@ -3,9 +3,9 @@ import os
 import requests
 from app.src.repositories.nohp_repositories import get_all_nomor_hp
 from dotenv import load_dotenv
-load_dotenv()
 
 def notify_sensor_data_Service(msg, app=None):
+    load_dotenv(override=True) 
     wa_server_url = os.getenv('WA_SERVER_URL')
     session_id = os.getenv('WA_SESSION_ID')
 

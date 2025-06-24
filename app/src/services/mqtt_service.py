@@ -201,10 +201,12 @@ def run_mqtt_service(app_instance):
 def kirim_perintah_siram(perintah):
     if client:
         client.publish("otomatis/siram/status", perintah)
+        print(f"📤 Kirim perintah: {perintah}")
         socketio.emit("status_siram", {"status": perintah})
 
 def kirim_perintah_kabut(perintah):
     if client:
         client.publish("otomatis/kabut/status", perintah)
         socketio.emit("status_kabut", {"status": perintah})
+        print(f"📤 Kirim perintah: {perintah}")
         

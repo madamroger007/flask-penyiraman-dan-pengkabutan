@@ -5,7 +5,8 @@ from app.src.services.data_sensor_service import start_scheduled_jobs
 from app.src.services.naive_bayes_train_service import train_naive_bayes
 from app.src.services.control_service import auto_control_loop
 from app.src.services.penjadwalan_service import jadwal_service_utama
-
+from dotenv import load_dotenv
+load_dotenv()
 app = create_app()
 
 def start_background_services():

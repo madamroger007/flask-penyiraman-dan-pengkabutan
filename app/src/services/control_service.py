@@ -9,20 +9,16 @@ from datetime import datetime
 from flask import current_app as app
 def kontrol_penyiraman_service(perintah):
     kirim_perintah_siram(perintah)
-    data = {
-        "jenis_aksi": "penyiraman",
-        "status": "aktif" if perintah == "1" else "nonaktif"
-    }
-    status = "Aktif" if perintah == "1" else "Mati"
-    waktu = datetime.now().strftime('Tanggal %d-%m-%Y, jam :%H:%M')
-    pesan = f"🚨 Penyiraman: {status}. {waktu}"
-    notify_sensor_data_Service(pesan, app)
-    create_riwayat_aksi_repository(data)
+    created_notification_service(perintah,"penyiraman")
 
 def kontrol_pengkabutan_service(perintah):
     kirim_perintah_kabut(perintah)
+    created_notification_service(perintah,"pengkabutan")
+   
+
+def created_notification_service(perintah,action=None):
     data = {
-        "jenis_aksi": "pengkabutan",
+        "jenis_aksi": action,
         "status": "aktif" if perintah == "1" else "nonaktif"
     }
     status = "Aktif" if perintah == "1" else "Mati"
@@ -30,6 +26,7 @@ def kontrol_pengkabutan_service(perintah):
     pesan = f"🚨 Pengkabutan: {status}. {waktu}"
     notify_sensor_data_Service(pesan, app)
     create_riwayat_aksi_repository(data)
+    notify_sensor_data_Service(pesan, app)
 
 def get_jadwal_penyiraman_service():
     # Implement the logic to retrieve the watering schedule from the database
@@ -43,9 +40,11 @@ def auto_control_loop():
         suhu_udara = latest_sensor_data.get("Suhu Udara")
         kelembapan_udara = latest_sensor_data.get("Kelembapan Udara")
 
-        if kelembapan_tanah is not None and kelembapan_tanah > 50:
+        if kelembapan_tanah is not None and kelembapan_tanah > 80:
             kirim_perintah_siram("0")
         if suhu_udara is not None and kelembapan_udara is not None:
-            if suhu_udara < 30 and kelembapan_udara > 50:
+            print(f"Suhu Udara: {suhu_udara}, Kelembapan Udara: {kelembapan_udara}")
+            if suhu_udara < 25 and kelembapan_udara > 71:
                 kirim_perintah_kabut("0")
-        time.sleep(5)
+                print("Pengkabutan diaktifkan")
+        time.sleep(2)
