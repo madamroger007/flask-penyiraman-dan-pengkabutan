@@ -44,7 +44,8 @@ def auto_control_loop():
             kirim_perintah_siram("0")
         if suhu_udara is not None and kelembapan_udara is not None:
             print(f"Suhu Udara: {suhu_udara}, Kelembapan Udara: {kelembapan_udara}")
-            if suhu_udara < 28 and kelembapan_udara > 71:
-                kirim_perintah_kabut("0")
-                print("Pengkabutan diaktifkan")
+            if suhu_udara < 27.1 and kelembapan_udara > 71:
+                kirim_perintah_kabut("0")  # Matikan kabut
+            elif suhu_udara > 27.1 and kelembapan_udara < 70:
+                kirim_perintah_kabut("0")  # Matikan kabut
         time.sleep(2)
