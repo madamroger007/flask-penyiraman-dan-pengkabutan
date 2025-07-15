@@ -199,4 +199,8 @@ Suhu Udara,Kelembapan Udara,Kelembapan Tanah,Penyiraman,Pengkabutan
 23.9,34.9,0.4,Perlu,Tidak perlu
 28.8,67.3,26.2,Perlu,Perlu
 28.4,59.7,42.8,Perlu,Perlu
-18.1,16.8,88.3,Tidak perlu,Tidak perlu
+18.1,16.8,0,Perlu,Tidak perlu
+18.1,16.8,0.5,Perlu,Tidak perlu
+18.1,16.8,1,Perlu,Tidak perlu
+28.8,67.3,0,Perlu,Perlu
+
