@@ -71,16 +71,10 @@ def predict_status(sensor_data):
 
         result = {
             'Penyiraman': 'Perlu' if prediction[0] else 'Tidak perlu',
-            # 'Penyiraman (Logika)': 'Perlu' if logic_result[0] else 'Tidak perlu',
             'Pengkabutan': 'Perlu' if prediction[1] else 'Tidak perlu',
-            # 'Pengkabutan (Logika)': 'Perlu' if logic_result[1] else 'Tidak perlu'
         }
         return result
     except Exception as e:
         print(f"❌ Gagal memproses prediksi: {e}")
         return None
 
-# def apply_manual_logic(row):
-#     penyiraman = 1 if row['Kelembapan Tanah'] < 50 else 0
-#     pengkabutan = 1 if row['Suhu Udara'] > 28 and row['Kelembapan Udara'] < 50 else 0
-#     return [penyiraman, pengkabutan]

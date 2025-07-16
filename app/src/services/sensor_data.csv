@@ -182,9 +182,9 @@ Suhu Udara,Kelembapan Udara,Kelembapan Tanah,Penyiraman,Pengkabutan
 32.7,46.3,24.3,Perlu,Perlu
 31.9,39.9,85.0,Tidak perlu,Perlu
 29.3,47.0,45.3,Perlu,Perlu
-27.0,47.3,79.7,Perlu,
+27.0,47.3,79.7,Perlu,Perlu
 27.9,93.6,20.6,Perlu,Tidak perlu
-27.0,76.3,12.0,Perlu,
+27.0,76.3,12.0,Perlu,Tidak perlu
 29.2,27.8,91.7,Tidak perlu,Perlu
 32.5,61.2,28.6,Perlu,Perlu
 23.4,95.8,16.5,Perlu,Tidak perlu
@@ -197,5 +197,5 @@ Suhu Udara,Kelembapan Udara,Kelembapan Tanah,Penyiraman,Pengkabutan
 27.5,53.6,59.7,Perlu,Perlu
 18.9,90.5,50.2,Perlu,Tidak perlu
 18.2,41.3,77.1,Perlu,Perlu
-18.2,71.0,6.6,Perlu,
+18.2,71.0,6.6,Perlu,Tidak perlu
 21.3,77.9,48.9,Perlu,Tidak perlu
