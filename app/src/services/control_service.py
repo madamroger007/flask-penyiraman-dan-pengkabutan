@@ -5,8 +5,11 @@ from app.src.services.mqtt_service import latest_sensor_data
 from app.src.services.notification_service import notify_sensor_data_Service
 import time
 from datetime import datetime
-
+from dotenv import load_dotenv
+import os
 from flask import current_app as app
+load_dotenv()
+
 def kontrol_penyiraman_service(perintah):
     kirim_perintah_siram(perintah)
     created_notification_service(perintah,"penyiraman")
@@ -23,7 +26,8 @@ def created_notification_service(perintah,action=None):
     }
     status = "Aktif" if perintah == "1" else "Mati"
     waktu = datetime.now().strftime('Tanggal %d-%m-%Y, jam :%H:%M')
-    pesan = f"🚨 Pengkabutan: {status}. {waktu}"
+    flask_url = os.getenv('FLASK_URL')
+    pesan = f"Akses Dashboard {flask_url}. 🚨 Pengkabutan: {status}. {waktu}"
     notify_sensor_data_Service(pesan, app)
     create_riwayat_aksi_repository(data)
     notify_sensor_data_Service(pesan, app)
