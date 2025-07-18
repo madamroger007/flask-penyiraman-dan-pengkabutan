@@ -109,7 +109,6 @@ def handle_sensor_data(client, userdata, msg):
         latest_sensor_data[label] = value_float
         sensor_last_seen[label] = now
 
-        
         socketio.emit("sensor_update", latest_sensor_data)
 
 # ⛔ Cek timeout data dan perubahan nilai
