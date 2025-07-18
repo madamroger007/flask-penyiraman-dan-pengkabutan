@@ -41,7 +41,7 @@ def _scheduled_prediction(app):
             'penyiraman': status_penyiraman == 'Perlu' if status_penyiraman == True else False,
             'pengkabutan': status_pengkabutan == 'Perlu' if status_pengkabutan == True else False,
         }
-        
+        create_data_sensor_repository(data_sensor)
         # Kirim notifikasi jika perlu
         if status_penyiraman == 'Perlu':
             notify_sensor_data_Service(
@@ -59,9 +59,7 @@ def _scheduled_prediction(app):
                 f"➡️ Kelembapan Tanah: {data_sensor['kelembapan_tanah']}%\n"
                 f"📡 Akses: {os.getenv('FLASK_URL')}",app
             )
-
-        print(f"🔮 Prediksi status: {prediction}")
-        create_data_sensor_repository(data_sensor)
+        
 
 
 def start_scheduled_jobs(app):
