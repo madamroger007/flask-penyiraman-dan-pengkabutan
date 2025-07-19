@@ -38,8 +38,9 @@ def _scheduled_prediction(app):
             'suhu': latest_sensor_data['Suhu Udara'],
             'kelembapan_udara': latest_sensor_data['Kelembapan Udara'],
             'kelembapan_tanah': latest_sensor_data['Kelembapan Tanah'],
-            'penyiraman': status_penyiraman == 'Perlu' if status_penyiraman == True else False,
-            'pengkabutan': status_pengkabutan == 'Perlu' if status_pengkabutan == True else False,
+            'penyiraman': status_penyiraman == 'Perlu',
+            'pengkabutan': status_pengkabutan == 'Perlu',
+
         }
         create_data_sensor_repository(data_sensor)
         # Kirim notifikasi jika perlu
