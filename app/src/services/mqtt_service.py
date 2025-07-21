@@ -124,7 +124,7 @@ def check_sensor_status():
         # Reset jika data sudah usang
         if last_change and (now - last_change).total_seconds() > SENSOR_RESET_HOURS * 3600:
             if val is not None:
-                latest_sensor_data[label] = None
+                latest_sensor_data[label] = 0  # ← Diubah dari None menjadi 0
                 updated = True
                 print(f"⚠️ Data {label} tidak berubah selama {SENSOR_RESET_HOURS} jam Di-reset.")
         
