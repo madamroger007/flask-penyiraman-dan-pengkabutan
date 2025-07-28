@@ -50,4 +50,4 @@ def auto_control_loop():
             print(f"Suhu Udara: {suhu_udara}, Kelembapan Udara: {kelembapan_udara}")
             if suhu_udara < 27 and kelembapan_udara > 71:
                 kirim_perintah_kabut("0")  # Matikan kabut
-        time.sleep(2)
+        time.sleep(1)
