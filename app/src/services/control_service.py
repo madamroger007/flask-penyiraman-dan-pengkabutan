@@ -27,7 +27,7 @@ def created_notification_service(perintah,action=None):
     status = "Aktif" if perintah == "1" else "Mati"
     waktu = datetime.now().strftime('Tanggal %d-%m-%Y, jam :%H:%M')
     flask_url = os.getenv('FLASK_URL')
-    pesan = f"Akses Dashboard {flask_url}. 🚨 Pengkabutan: {status}. {waktu}"
+    pesan = f"Akses Dashboard {flask_url}. 🚨 {action}: {status}. {waktu}"
     notify_sensor_data_Service(pesan, app)
     create_riwayat_aksi_repository(data)
     notify_sensor_data_Service(pesan, app)
@@ -50,4 +50,4 @@ def auto_control_loop():
             print(f"Suhu Udara: {suhu_udara}, Kelembapan Udara: {kelembapan_udara}")
             if suhu_udara < 27 and kelembapan_udara > 71:
                 kirim_perintah_kabut("0")  # Matikan kabut
-        time.sleep(1)
+        time.sleep(2)
